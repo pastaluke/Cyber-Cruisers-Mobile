@@ -502,8 +502,17 @@ Lighting shader:
 ---
 
 ### Milestone 1 — Core Loop (Playable Prototype)
-**Goal:** First complete job from accept → complete, with real economy tracking.
+**Goal:** First complete job from accept → complete, with real economy tracking. World scale, movement feel, and visual layers must be dialled in before systems are built on top.
 
+**Feel & Foundation (must be right first)**
+- [ ] World scale: tune block size, road length, and lane width so the city reads as vast but navigable
+- [ ] Cruiser scale: player sprite size relative to road width feels correct (not too large, not toy-tiny)
+- [ ] Player movement: fine-tune cruise speed, acceleration curve, lane-change timing, and turn responsiveness until driving feels satisfying
+- [ ] Parallax layers: verify all 3 scroll layers (buildings, road plane, rain) move correctly in every heading; fix any pop or axis mismatch
+- [ ] Docking design: define and prototype how the player stops at a POI — approach speed, snap zone size, visual cue, confirmation feedback
+- [ ] General look & feel pass: colour palette, contrast, readability of roads vs buildings; not final art, but must be coherent
+
+**Core Loop**
 - [ ] City generator: district tile pools, POI anchor placement
 - [ ] Mini-map with player position + job markers
 - [ ] Diegetic phone: shell app with one company's job board
@@ -517,7 +526,7 @@ Lighting shader:
 - [ ] Day/night cycle (ambient light shift)
 - [ ] Basic audio: engine hum, lane-change SFX, notification chime
 
-**Exit criteria:** A full session — accept job, fly across a generated city, dock, complete, earn credits, rank up — is satisfying and stable.
+**Exit criteria:** A full session — accept job, fly across a generated city, dock, complete, earn credits, rank up — is satisfying and stable. Driving and world scale feel right independent of the job loop.
 
 ---
 
