@@ -1,0 +1,60 @@
+{
+  "classes": [
+    {
+      "id": "compact",
+      "name": "Compact",
+      "description": "Small, fast, low cargo cap. Great for taxi and food delivery.",
+      "stats": {
+        "speed": 220,
+        "handling": 0.9,
+        "cargoCapacity": 2,
+        "durability": 0.7
+      },
+      "color": 52479,
+      "width": 8,
+      "height": 12
+    },
+    {
+      "id": "courier",
+      "name": "Courier",
+      "description": "Mid-size, balanced. The reliable all-rounder and starter class.",
+      "stats": {
+        "speed": 180,
+        "handling": 0.75,
+        "cargoCapacity": 4,
+        "durability": 0.85
+      },
+      "color": 16746496,
+      "width": 10,
+      "height": 14
+    },
+    {
+      "id": "freight",
+      "name": "Freight",
+      "description": "Large, slow, high cargo cap. Built for bulk warehouse runs.",
+      "stats": {
+        "speed": 130,
+        "handling": 0.5,
+        "cargoCapacity": 10,
+        "durability": 1.0
+      },
+      "color": 16763904,
+      "width": 14,
+      "height": 18
+    },
+    {
+      "id": "luxury",
+      "name": "Luxury",
+      "description": "Fast, sleek, low cargo. For high-profile taxi and VIP escort.",
+      "stats": {
+        "speed": 260,
+        "handling": 0.95,
+        "cargoCapacity": 2,
+        "durability": 0.65
+      },
+      "color": 15597823,
+      "width": 10,
+      "height": 16
+    }
+  ]
+}

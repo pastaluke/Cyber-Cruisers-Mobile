@@ -609,13 +609,13 @@ Lighting shader:
 
 | # | Question | Status | Decision |
 |---|---|---|---|
-| 1 | Engine: Phaser 3 vs PixiJS vs Godot? | **Open** | — |
+| 1 | Engine: Phaser 3 vs PixiJS vs Godot? | **Decided** | Phaser 3 + Vite |
 | 2 | Normal map lighting: custom GLSL in Phaser vs deferred pipeline? | Open | — |
-| 3 | City generation: seed-based procedural vs hand-authored per district? | Open | — |
-| 4 | Is the Getaway job type in scope for M3, or post-launch? | Open | — |
-| 5 | Monetisation model (Credits only vs cosmetic IAP)? | Open | — |
+| 3 | City generation: seed-based procedural vs hand-authored per district? | **Decided** | Seeded procedural — fixed seed, same city every run |
+| 4 | Is the Getaway job type in scope for M3, or post-launch? | **Decided** | Post-launch |
+| 5 | Monetisation model (Credits only vs cosmetic IAP)? | **Decided** | Credits only for v1; no premium currency |
 | 6 | Single hangar or multiple garages player can own? | Open | — |
-| 7 | Collision with traffic: cosmetic only (damage), or gameplay penalty? | Open | — |
+| 7 | Collision with traffic: cosmetic only (damage), or gameplay penalty? | **Decided** | No collision — Cruisers auto-accelerate and use forward raycasts (ADAS-style braking) to avoid contact entirely. Controls: hold L/R zone to merge lanes; dedicated brake button for docking |
 | 8 | Do NPCs react to player (horn, brake lights)? | Open | — |
 
 ---
