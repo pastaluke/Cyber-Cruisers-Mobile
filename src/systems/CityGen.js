@@ -12,8 +12,8 @@
 // ─── Constants ────────────────────────────────────────────────────────────────
 export const TILE_SIZE    = 16;
 export const ROAD_TILES   = 4;   // 2 lanes × 2 directions
-export const BLOCK_TILES  = 10;  // building block width in tiles
-export const CHUNK_TILES  = ROAD_TILES + BLOCK_TILES; // 14
+export const BLOCK_TILES  = 36;  // building block width in tiles
+export const CHUNK_TILES  = ROAD_TILES + BLOCK_TILES; // 40
 export const WORLD_CHUNKS = 16;
 export const WORLD_TILES  = WORLD_CHUNKS * CHUNK_TILES; // 224
 export const WORLD_PX     = WORLD_TILES * TILE_SIZE;    // 3584
