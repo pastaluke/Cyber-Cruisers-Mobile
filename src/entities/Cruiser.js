@@ -5,9 +5,12 @@
  *  - Always auto-accelerates toward cruiseSpeed.
  *  - RaycastSystem feeds in a brakeForce (0–1) that reduces target speed.
  *  - Brake button adds an additional manual brakeForce (for docking etc.).
- *  - Lane changes are initiated by holding left/right zones; the cruiser
- *    smoothly tweens to the target lane centre.
- *  - Heading changes (turns) are queued and executed at intersections.
+ *  - Lane changes are triggered by swipe or zone tap/hold.
+ *    laneIndex always maps screen-space: lower = left/top of screen.
+ *  - Turns are automatic at intersections based on lane:
+ *      laneIndex 0              → LEFT TURN  (driver's leftmost)
+ *      laneIndex 1 … N-2        → STRAIGHT
+ *      laneIndex LANES_PER_DIR-1 → RIGHT TURN (driver's rightmost)
  *
  * The Cruiser does NOT use Phaser physics — position is managed manually
  * so we have full control over the smooth acceleration model.
@@ -56,8 +59,8 @@ export class Cruiser {
     this._laneQueueLeft   = false;
     this._laneQueueRight  = false;
 
-    // Turn queue
-    this._queuedHeading   = null;  // heading to adopt at next intersection
+    // Intersection state (prevents re-triggering while inside one crossing)
+    this._inIntersection  = false;
 
     // Braking
     this._manualBrake     = false;
@@ -102,15 +105,12 @@ export class Cruiser {
     if (cityGen) this._checkIntersection(cityGen);
   }
 
-  /** Called by TouchControls when player wants to change lane */
+  /** Called by TouchControls: swipe left/up = lower laneIndex, swipe right/down = higher */
   queueLaneLeft()  { this._laneQueueLeft  = true; }
   queueLaneRight() { this._laneQueueRight = true; }
 
   /** Called by TouchControls to hold/release manual brake */
   setManualBrake(active) { this._manualBrake = active; }
-
-  /** Queue a heading change to be applied at the next intersection */
-  queueHeading(h) { this._queuedHeading = h; }
 
   /** Entity descriptor for RaycastSystem */
   toEntity() {
@@ -137,26 +137,18 @@ export class Cruiser {
       return; // don't queue another change mid-tween
     }
 
-    // Process a queued lane change
+    // Process a queued lane change.
+    // laneIndex is screen-space: lower = left/top of screen, higher = right/bottom.
     if (this._laneQueueLeft || this._laneQueueRight) {
-      const dir   = (this.heading === 'N' || this.heading === 'E') ? this.heading
-                  : (this.heading === 'S' ? 'N' : 'E'); // effective northbound/eastbound side
-
-      const goInner = (this.heading === 'N' || this.heading === 'E')
-        ? this._laneQueueLeft : this._laneQueueRight;
-
-      const newLane = goInner
+      const newLane = this._laneQueueLeft
         ? Math.max(0, this.laneIndex - 1)
         : Math.min(LANES_PER_DIR - 1, this.laneIndex + 1);
 
       if (newLane !== this.laneIndex) {
         this.laneIndex = newLane;
-        let target;
-        if (isVertical) {
-          target = nsLaneCentreX(this.roadGroup, this.heading, newLane);
-        } else {
-          target = ewLaneCentreY(this.roadGroup, this.heading, newLane);
-        }
+        const target = isVertical
+          ? nsLaneCentreX(this.roadGroup, this.heading, newLane)
+          : ewLaneCentreY(this.roadGroup, this.heading, newLane);
         this._laneTweenTarget = target;
         this._laneTweenActive = true;
       }
@@ -167,34 +159,55 @@ export class Cruiser {
   }
 
   _checkIntersection(cityGen) {
-    if (!this._queuedHeading) return;
-    if (this._queuedHeading === this.heading) { this._queuedHeading = null; return; }
-
-    const isVertical = this.heading === 'N' || this.heading === 'S';
-
-    // At an intersection: road must exist in both axes
     const nsGroup = cityGen.nsRoadGroupAt(this.x);
     const ewGroup = cityGen.ewRoadGroupAt(this.y);
-    if (nsGroup === -1 || ewGroup === -1) return;
+    const atIntersection = nsGroup !== -1 && ewGroup !== -1;
 
-    // Execute turn
-    const newH = this._queuedHeading;
-    this._queuedHeading = null;
+    if (!atIntersection) {
+      this._inIntersection = false;
+      return;
+    }
+    if (this._inIntersection) return; // already handled this crossing
+    this._inIntersection = true;
+
+    // Determine which lane type we're in.
+    // "Forward" headings (N, E): laneIndex 0 = driver's left, LANES_PER_DIR-1 = driver's right.
+    // "Backward" headings (S, W): laneIndex LANES_PER_DIR-1 = driver's left, 0 = driver's right.
+    const isForward   = this.heading === 'N' || this.heading === 'E';
+    const inLeftLane  = isForward
+      ? this.laneIndex === 0
+      : this.laneIndex === LANES_PER_DIR - 1;
+    const inRightLane = isForward
+      ? this.laneIndex === LANES_PER_DIR - 1
+      : this.laneIndex === 0;
+
+    if (!inLeftLane && !inRightLane) return; // straight lane — pass through
+
+    // Compute new heading
+    const LEFT_TURN  = { N: 'W', S: 'E', E: 'N', W: 'S' };
+    const RIGHT_TURN = { N: 'E', S: 'W', E: 'S', W: 'N' };
+    const newH = inLeftLane ? LEFT_TURN[this.heading] : RIGHT_TURN[this.heading];
+
     this.heading = newH;
-
+    const newIsForward  = newH === 'N' || newH === 'E';
     const newIsVertical = newH === 'N' || newH === 'S';
 
-    // Snap to correct lane centre on new road
-    if (newIsVertical) {
-      this.x         = nsLaneCentreX(nsGroup, newH, 0);
-      this.roadGroup = nsGroup;
-      this.laneIndex = 0;
-    } else {
-      this.y         = ewLaneCentreY(ewGroup, newH, 0);
-      this.roadGroup = ewGroup;
-      this.laneIndex = 0;
-    }
+    // After a left turn, land in the left-turn lane of the new road.
+    // After a right turn, land in the right-turn lane of the new road.
+    // For forward headings that lane is index 0 (left turn) or LANES_PER_DIR-1 (right turn);
+    // for backward headings the positions are swapped.
+    const newLane = inLeftLane
+      ? (newIsForward ? 0 : LANES_PER_DIR - 1)
+      : (newIsForward ? LANES_PER_DIR - 1 : 0);
 
+    this.laneIndex = newLane;
+    if (newIsVertical) {
+      this.x         = nsLaneCentreX(nsGroup, newH, newLane);
+      this.roadGroup = nsGroup;
+    } else {
+      this.y         = ewLaneCentreY(ewGroup, newH, newLane);
+      this.roadGroup = ewGroup;
+    }
     this._laneTweenActive = false;
   }
 }

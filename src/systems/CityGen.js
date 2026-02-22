@@ -4,21 +4,34 @@
  * World is a WORLD_CHUNKS × WORLD_CHUNKS chunk grid.
  * Each chunk = ROAD_TILES (road) + BLOCK_TILES (buildings) in each axis.
  *
- * Road layout within a road strip (ROAD_TILES = 4):
- *   N-S road (vertical):  cols 0,1 = Southbound  |  cols 2,3 = Northbound
- *   E-W road (horizontal): rows 0,1 = Westbound   |  rows 2,3 = Eastbound
+ * Road layout within a road strip (ROAD_TILES = 8, 4 lanes per direction):
+ *   N-S road (vertical):
+ *     cols 0-3 = Southbound  (lane 0 = inner/left-screen, lane 3 = outer/right-screen)
+ *     cols 4-7 = Northbound  (lane 0 = inner/left-screen, lane 3 = outer/right-screen)
+ *   E-W road (horizontal):
+ *     rows 0-3 = Westbound   (lane 0 = inner/top-screen,  lane 3 = outer/bottom-screen)
+ *     rows 4-7 = Eastbound   (lane 0 = inner/top-screen,  lane 3 = outer/bottom-screen)
+ *
+ * Lane roles (per direction):
+ *   laneIndex 0              — LEFT-TURN lane  (auto-turns left at intersections)
+ *   laneIndex 1, 2           — STRAIGHT lanes
+ *   laneIndex LANES_PER_DIR-1 — RIGHT-TURN lane (auto-turns right at intersections)
+ *
+ * "Left" and "right" are always screen-space consistent:
+ *   swipe left / swipe up   → lower laneIndex (toward left/top of screen)
+ *   swipe right / swipe down → higher laneIndex (toward right/bottom of screen)
  */
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 export const TILE_SIZE    = 16;
-export const ROAD_TILES   = 4;   // 2 lanes × 2 directions
+export const ROAD_TILES   = 8;   // 4 lanes × 2 directions
 export const BLOCK_TILES  = 36;  // building block width in tiles
-export const CHUNK_TILES  = ROAD_TILES + BLOCK_TILES; // 40
+export const CHUNK_TILES  = ROAD_TILES + BLOCK_TILES; // 44
 export const WORLD_CHUNKS = 16;
-export const WORLD_TILES  = WORLD_CHUNKS * CHUNK_TILES; // 224
-export const WORLD_PX     = WORLD_TILES * TILE_SIZE;    // 3584
+export const WORLD_TILES  = WORLD_CHUNKS * CHUNK_TILES; // 704
+export const WORLD_PX     = WORLD_TILES * TILE_SIZE;    // 11264
 
-export const LANES_PER_DIR = ROAD_TILES / 2; // 2
+export const LANES_PER_DIR = ROAD_TILES / 2; // 4
 
 // Tile IDs (Phaser tilemap data: 0 = blank, 1-N = tileset frame N-1)
 export const TILE_ROAD_NS   = 1;

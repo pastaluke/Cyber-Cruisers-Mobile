@@ -119,7 +119,7 @@ export class TrafficSystem {
       if (!road) return;
 
       const dir   = Math.random() < 0.5 ? 'N' : 'S';
-      const lane  = Math.floor(Math.random() * LANES_PER_DIR);
+      const lane  = 1 + Math.floor(Math.random() * (LANES_PER_DIR - 2)); // straight lanes only
       const x     = nsLaneCentreX(road.g, dir, lane);
       const yOff  = MIN_SPAWN_DIST + Math.random() * (SPAWN_RADIUS - MIN_SPAWN_DIST);
       const y     = dir === 'N'
@@ -135,7 +135,7 @@ export class TrafficSystem {
       if (!road) return;
 
       const dir   = Math.random() < 0.5 ? 'E' : 'W';
-      const lane  = Math.floor(Math.random() * LANES_PER_DIR);
+      const lane  = 1 + Math.floor(Math.random() * (LANES_PER_DIR - 2)); // straight lanes only
       const y     = ewLaneCentreY(road.g, dir, lane);
       const xOff  = MIN_SPAWN_DIST + Math.random() * (SPAWN_RADIUS - MIN_SPAWN_DIST);
       const x     = dir === 'E'

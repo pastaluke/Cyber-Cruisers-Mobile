@@ -15,11 +15,18 @@
  *   │        │  (hold down) │            │
  *   └────────┴──────────────┴────────────┘
  *
- * A "turn" is triggered by a quick swipe (< 250 ms, > 30 px) in a
- * non-lane-change direction (forward/back). This queues a heading change.
+ * Lane changes via swipe (screen-space absolute):
+ *   Swipe left  or swipe up   → move to lane with lower laneIndex (left/top of screen)
+ *   Swipe right or swipe down → move to lane with higher laneIndex (right/bottom of screen)
  *
- * Lane changes: holding left/right zone for > HOLD_THRESHOLD ms starts
- * sending repeated lane-change signals at LANE_REPEAT_INTERVAL intervals.
+ * Parallel swipes (e.g. swipe up while heading N) are ignored.
+ *
+ * Lane changes via zone tap/hold:
+ *   Tap or hold left zone  → repeated lane decrements
+ *   Tap or hold right zone → repeated lane increments
+ *
+ * Turns are now automatic: the leftmost lane auto-turns left at intersections,
+ * the rightmost lane auto-turns right. No manual turn input required.
  */
 
 const CANVAS_W = 360;
@@ -129,7 +136,7 @@ export class TouchControls {
       const angle = Math.atan2(dy, dx) * (180 / Math.PI);
       // Map angle to cardinal swipe direction
       const swipeDir = this._angleToDir(angle);
-      if (swipeDir) this._handleSwipeTurn(swipeDir);
+      if (swipeDir) this._handleSwipe(swipeDir);
     }
 
     ps.active = false;
@@ -157,9 +164,10 @@ export class TouchControls {
     return null;
   }
 
-  _handleSwipeTurn(swipeDir) {
-    // Convert swipe direction to heading and queue on cruiser
-    // The swipe direction IS the intended new heading
-    this.cruiser.queueHeading(swipeDir);
+  _handleSwipe(swipeDir) {
+    // Screen-space: left/up = decrease laneIndex, right/down = increase laneIndex.
+    // Parallel swipes (same axis as heading) are ignored.
+    if (swipeDir === 'W' || swipeDir === 'N') this.cruiser.queueLaneLeft();
+    else if (swipeDir === 'E' || swipeDir === 'S') this.cruiser.queueLaneRight();
   }
 }
