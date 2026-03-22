@@ -1,0 +1,69 @@
+{
+  "districts": [
+    {
+      "id": "neon_commercial",
+      "name": "Neon Commercial",
+      "palette": {
+        "road": "0x1a1230",
+        "building": "0x1a0a2e",
+        "buildingAlt": "0x2a0a3e",
+        "accent": "0xff00ff",
+        "ambient": "0x220033"
+      },
+      "laneSpeed": 1.0,
+      "trafficDensity": 0.8
+    },
+    {
+      "id": "industrial_port",
+      "name": "Industrial Port",
+      "palette": {
+        "road": "0x1a1208",
+        "building": "0x2a1a0a",
+        "buildingAlt": "0x3a2010",
+        "accent": "0xff8800",
+        "ambient": "0x1a0a00"
+      },
+      "laneSpeed": 0.85,
+      "trafficDensity": 0.6
+    },
+    {
+      "id": "residential_stack",
+      "name": "Residential Stack",
+      "palette": {
+        "road": "0x0a0f1a",
+        "building": "0x0a0a2e",
+        "buildingAlt": "0x0f0f3a",
+        "accent": "0x4488ff",
+        "ambient": "0x000a1a"
+      },
+      "laneSpeed": 0.9,
+      "trafficDensity": 0.5
+    },
+    {
+      "id": "corp_arcology",
+      "name": "Corp Arcology",
+      "palette": {
+        "road": "0x0f1525",
+        "building": "0x0a0f2e",
+        "buildingAlt": "0x101830",
+        "accent": "0x00ddff",
+        "ambient": "0x001020"
+      },
+      "laneSpeed": 1.1,
+      "trafficDensity": 0.4
+    },
+    {
+      "id": "outer_ring",
+      "name": "Outer Ring",
+      "palette": {
+        "road": "0x0a120a",
+        "building": "0x0a1a0a",
+        "buildingAlt": "0x0f200f",
+        "accent": "0x44cc44",
+        "ambient": "0x001000"
+      },
+      "laneSpeed": 0.75,
+      "trafficDensity": 0.3
+    }
+  ]
+}
